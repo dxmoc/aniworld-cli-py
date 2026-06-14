@@ -1,4 +1,11 @@
-"""streamtape extractor. Implemented in a later milestone (M4 VOE first, then M5)."""
+"""streamtape extractor (placeholder).
+
+Not currently served by AniWorld: a live survey across multiple series found only
+VOE, Doodstream, Filemoon and Vidmoly. Per the extractor contract this returns
+None so the resolver falls through. Implementing it properly requires a live
+embed fixture to verify against (the brief forbids guessing volatile values), so
+it is intentionally left unimplemented until streamtape reappears on the site.
+"""
 
 from __future__ import annotations
 
@@ -8,9 +15,5 @@ from ..models import Stream
 
 
 def extract(embed_url: str, session: requests.Session) -> Stream | None:
-    """Resolve the final stream for a streamtape embed page.
-
-    Returns Stream(url, headers) on success or None on failure.
-    """
-    # TODO(milestone): implement against a saved live fixture.
+    """Return None until a live streamtape embed fixture is available."""
     return None
