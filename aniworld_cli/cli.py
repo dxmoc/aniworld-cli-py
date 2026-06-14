@@ -48,22 +48,25 @@ def run(args: argparse.Namespace) -> int:
         print(i18n.t("aborted"))
         return 0
 
-    # Pipeline below is built out in M2–M5. Keep the skeleton honest for now.
     print(i18n.t("searching"))
-    try:
-        from . import search as search_mod
+    from . import search as search_mod
 
-        results = search_mod.search(query)
-    except NotImplementedError as exc:
-        print(f"[M1] {exc}")
-        return 0
-
+    results = search_mod.search(query)
     if not results:
         print(i18n.t("no_results", query))
         return 0
 
-    # Full season/episode/hoster/extract loop lands in M3–M6.
-    print(i18n.t("no_hosters"))
+    series = _select(
+        i18n.t("choose_series"),
+        [questionary.Choice(s.display, value=s) for s in results],
+    )
+    if series is None:
+        print(i18n.t("aborted"))
+        return 0
+
+    # Season/episode/hoster/extract loop lands in M3–M6.
+    print(series.url)
+    print(i18n.t("no_episodes"))
     return 0
 
 
