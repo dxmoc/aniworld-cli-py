@@ -1,53 +1,56 @@
 # aniworld-cli
 
-> Eine schlanke, reine **Streaming-CLI** für [aniworld.to](https://aniworld.to) –
-> komplett eigenständig in Python geschrieben, mit deutscher Oberfläche.
-> Wiedergabe ausschließlich über **mpv**. Kein Download.
+> A lean, **streaming-only CLI** for [aniworld.to](https://aniworld.to) –
+> written from scratch in pure Python, with a German user interface.
+> Playback runs exclusively through **mpv**. No downloads.
 
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-green)](LICENSE)
 [![Platforms](https://img.shields.io/badge/os-Linux%20%7C%20Windows%20%7C%20WSL-lightgrey)]()
 
----
-
-## Inhalt
-
-- [Funktionen](#funktionen)
-- [Schnellstart](#schnellstart)
-- [1 · mpv installieren](#1--mpv-installieren)
-- [2 · Projekt einrichten](#2--projekt-einrichten)
-- [3 · Tests ausführen](#3--tests-ausführen)
-- [4 · Benutzen](#4--benutzen)
-- [Argumente & Umgebungsvariablen](#argumente--umgebungsvariablen)
-- [Fehlerbehebung](#fehlerbehebung)
-- [Rechtliches](#rechtliches)
+> **Note:** The on-screen text of the app is **German** (it targets aniworld.to,
+> a German anime site). This README is in English; the CLI prompts are not.
 
 ---
 
-## Funktionen
+## Contents
 
-- 🔍 Suche über die AJAX-Schnittstelle von aniworld.to
-- 📺 Auswahl von **Serie → Staffel (inkl. Filme) → Folge** per Pfeiltasten
-- 🌐 **Sprachauswahl pro Folge**: bietet eine Folge mehrere Sprachen an
-  (z. B. German Dub / German Sub / Eng Sub), erscheint ein Menü; die Wahl wird
-  für die nächsten Folgen gemerkt. Mit `--lang` oder `--no-menu` greift
-  stattdessen automatisch die Prioritätsreihenfolge.
-- 🔁 Hoster-Fallback nach Priorität – verifizierte Extraktoren: **VOE**,
-  **Doodstream**, **Vidmoly** (Filemoon „best effort")
-- ⏭️ „Nächste Folge / Andere Folge / Beenden"-Schleife nach der Wiedergabe
-- 🐞 `--debug` löst die finale Stream-URL auf, ohne mpv zu starten
+- [Features](#features)
+- [Quick start](#quick-start)
+- [1 · Install mpv](#1--install-mpv)
+- [2 · Set up the project](#2--set-up-the-project)
+- [3 · Run the tests](#3--run-the-tests)
+- [4 · Usage](#4--usage)
+- [Arguments & environment variables](#arguments--environment-variables)
+- [Troubleshooting](#troubleshooting)
+- [Legal](#legal)
 
 ---
 
-## Schnellstart
+## Features
+
+- 🔍 Search via aniworld.to's AJAX endpoint
+- 📺 Pick **series → season (incl. movies) → episode** with arrow keys
+- 🌐 **Per-episode language/subtitle selection**: when an episode offers more
+  than one language (e.g. German Dub / German Sub / Eng Sub) a menu appears, and
+  your choice is remembered for the next episodes. With `--lang` or `--no-menu`
+  the configured priority order is used automatically instead.
+- 🔁 Hoster fallback by priority – verified extractors: **VOE**, **Doodstream**,
+  **Vidmoly** (Filemoon is best-effort)
+- ⏭️ "Next episode / Other episode / Quit" loop after playback
+- 🐞 `--debug` resolves the final stream URL without launching mpv
+
+---
+
+## Quick start
 
 ```bash
-# 1. mpv installieren (siehe unten je nach Betriebssystem)
-# 2. Repo holen
+# 1. Install mpv (see per-OS instructions below)
+# 2. Get the repo
 git clone https://github.com/dxmoc/aniworld-cli-py.git
 cd aniworld-cli-py
 
-# 3. Virtuelle Umgebung + Abhängigkeiten
+# 3. Virtual environment + dependencies
 python -m venv .venv
 # Linux/macOS/WSL:
 source .venv/bin/activate
@@ -55,21 +58,21 @@ source .venv/bin/activate
 #   .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 
-# 4. Starten
+# 4. Run
 python -m aniworld_cli "naruto"
 ```
 
 ---
 
-## 1 · mpv installieren
+## 1 · Install mpv
 
-aniworld-cli spielt ausschließlich über **[mpv](https://mpv.io/)** ab. mpv muss
-im `PATH` liegen (oder per `--player <pfad>` übergeben werden).
+aniworld-cli plays exclusively through **[mpv](https://mpv.io/)**. mpv must be on
+your `PATH` (or passed via `--player <path>`).
 
 ### 🐧 Linux
 
-| Distribution      | Befehl                          |
-|-------------------|---------------------------------|
+| Distribution      | Command                          |
+|-------------------|----------------------------------|
 | Arch / Manjaro    | `sudo pacman -S mpv`            |
 | Debian / Ubuntu   | `sudo apt install mpv`          |
 | Fedora            | `sudo dnf install mpv`          |
@@ -78,23 +81,25 @@ im `PATH` liegen (oder per `--player <pfad>` übergeben werden).
 
 ```powershell
 winget install --id shinchiro.mpv
-# oder:
+# or:
 scoop install mpv
 ```
 
-> Nach der Installation ggf. ein **neues** Terminal öffnen, damit der `PATH`
-> aktualisiert ist. Test: `mpv --version`.
+> The `shinchiro.mpv` package does **not** add mpv to your `PATH` automatically.
+> Either add its folder (e.g. `C:\Program Files\MPV Player`) to your user `PATH`,
+> open a **new** terminal, or pass `--player "C:\Program Files\MPV Player\mpv.exe"`.
+> Verify with `mpv --version`.
 
-### 🐧🪟 WSL (Ubuntu unter Windows)
+### 🐧🪟 WSL (Ubuntu on Windows)
 
 ```bash
 sudo apt update && sudo apt install mpv
 ```
 
-> In WSL ohne GUI-Setup öffnet mpv kein Fenster. Nutze `--debug` zum Auflösen
-> der URL, oder ein WSLg-fähiges Windows 11 für echte Wiedergabe.
+> Without a GUI setup, mpv won't open a window in WSL. Use `--debug` to just
+> resolve the URL, or a WSLg-capable Windows 11 for real playback.
 
-**Prüfen:**
+**Check:**
 
 ```bash
 mpv --version
@@ -102,9 +107,9 @@ mpv --version
 
 ---
 
-## 2 · Projekt einrichten
+## 2 · Set up the project
 
-Voraussetzung: **Python 3.9+** und **git**.
+Requires **Python 3.9+** and **git**.
 
 <details>
 <summary>🐧 <b>Linux / macOS / WSL</b></summary>
@@ -133,14 +138,14 @@ py -m venv .venv
 pip install -r requirements.txt
 ```
 
-> Falls das Aktivieren mit „Ausführung von Skripten ist deaktiviert" scheitert:
+> If activation fails with "running scripts is disabled on this system":
 > ```powershell
 > Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 > ```
-> (gilt nur für die aktuelle Sitzung).
+> (applies to the current session only).
 </details>
 
-Optional als systemweiter Befehl `aniworld-cli`:
+Optional, as a system-wide `aniworld-cli` command:
 
 ```bash
 pip install -e .
@@ -148,106 +153,108 @@ pip install -e .
 
 ---
 
-## 3 · Tests ausführen
+## 3 · Run the tests
 
-Die Parser werden **offline** gegen gespeicherte HTML-/JSON-Beispiele in
-`tests/fixtures/` geprüft – kein Netzwerk nötig, schnell und deterministisch.
+The parsers are tested **offline** against saved HTML/JSON samples in
+`tests/fixtures/` – no network needed, fast and deterministic.
 
 ```bash
 pip install pytest
 python -m pytest -q
 ```
 
-Erwartete Ausgabe: alle Tests grün (`… passed`).
+Expected: all tests green (`… passed`).
 
-**Manueller Smoke-Test mit echtem Netzwerk** (löst die finale Stream-URL auf,
-ohne mpv zu starten):
+**Manual smoke test with real network** (resolves the final stream URL without
+launching mpv):
 
 ```bash
 python -m aniworld_cli "naruto" --episode 1-1 --debug
 ```
 
-Gibt eine `…/master.m3u8`-URL plus Header aus, wenn alles funktioniert.
+Prints a `…/master.m3u8` URL plus headers when everything works.
 
 ---
 
-## 4 · Benutzen
+## 4 · Usage
 
 ```bash
-# Interaktiv (fragt nach dem Suchbegriff):
+# Interactive (asks for a search term):
 python -m aniworld_cli
 
-# Mit Suchbegriff – führt durch Serie/Staffel/Folge:
+# With a search term – guides you through series/season/episode:
 python -m aniworld_cli "naruto"
 
-# Direkt eine bestimmte Folge ohne Menüs (Staffel-Folge; 0-N = Filme):
+# Jump straight to one episode without menus (season-episode; 0-N = movies):
 python -m aniworld_cli "naruto" --no-menu --episode 1-1
 
-# Englische Untertitel bevorzugen:
+# Prefer English subtitles:
 python -m aniworld_cli "one piece" --lang eng-sub
 
-# Eigener mpv-Pfad (falls nicht im PATH):
+# Custom mpv path (if not on PATH):
 python -m aniworld_cli "naruto" --player "C:\Program Files\MPV Player\mpv.exe"
 ```
 
-Nach der Wiedergabe erscheint das Menü **Nächste Folge / Andere Folge / Beenden**.
+After playback you get a **Next episode / Other episode / Quit** menu.
 
 ---
 
-## Argumente & Umgebungsvariablen
+## Arguments & environment variables
 
-| Argument          | Bedeutung                                                       |
-|-------------------|-----------------------------------------------------------------|
-| `query`           | Suchbegriff (optional; sonst wird gefragt)                      |
-| `--lang`          | Sprachpriorität, z. B. `ger-dub,ger-sub,eng-sub`                |
-| `--hoster`        | Hoster-Priorität, kommagetrennt                                 |
-| `--episode S-E`   | Direkt Staffel-Folge wählen, z. B. `1-3` (oder `0-1` für Filme) |
-| `--no-menu`       | Nur Argumente verwenden, keine interaktiven Menüs               |
-| `--player <pfad>` | Pfad zu mpv (sonst aus `PATH`)                                  |
-| `--debug`         | Stream-URL + Header ausgeben, mpv nicht starten                 |
-| `--version`       | Version anzeigen                                                |
+| Argument          | Meaning                                                          |
+|-------------------|------------------------------------------------------------------|
+| `query`           | Search term (optional; prompted otherwise)                       |
+| `--lang`          | Language priority, e.g. `ger-dub,ger-sub,eng-sub`                |
+| `--hoster`        | Hoster priority, comma-separated                                 |
+| `--episode S-E`   | Pick a season-episode directly, e.g. `1-3` (or `0-1` for movies) |
+| `--no-menu`       | Use arguments only, no interactive menus                         |
+| `--player <path>` | Path to mpv (otherwise taken from `PATH`)                        |
+| `--debug`         | Print stream URL + headers, do not launch mpv                    |
+| `--version`       | Show the version                                                 |
 
-Gleiche Einstellungen per Umgebungsvariable:
+The same settings via environment variables:
 
-| Variable           | Wirkung                                  |
-|--------------------|------------------------------------------|
-| `ANIWORLD_LANG`    | Sprachpriorität (wie `--lang`)           |
-| `ANIWORLD_HOSTER`  | Hoster-Priorität (wie `--hoster`)        |
-| `ANIWORLD_BASE_URL`| Abweichende Basis-URL                    |
-| `ANIWORLD_UA`      | Eigener User-Agent                       |
+| Variable            | Effect                                  |
+|---------------------|-----------------------------------------|
+| `ANIWORLD_LANG`     | Language priority (like `--lang`)       |
+| `ANIWORLD_HOSTER`   | Hoster priority (like `--hoster`)       |
+| `ANIWORLD_BASE_URL` | Override the base URL                   |
+| `ANIWORLD_UA`       | Custom User-Agent                       |
 
----
-
-## Fehlerbehebung
-
-| Symptom | Ursache / Lösung |
-|---------|------------------|
-| `mpv wurde nicht gefunden` | mpv installieren (siehe [Schritt 1](#1--mpv-installieren)) oder `--player <pfad>` nutzen. |
-| Cloudflare-/Anti-Bot-Meldung | Die Seite blockt Bots. Optional hilft ein **externer** [`flaresolverr`](https://github.com/FlareSolverr/FlareSolverr)-Dienst (nicht enthalten). |
-| `Kein Hoster lieferte einen abspielbaren Stream` | Hoster gerade nicht verfügbar; später erneut versuchen oder anderen Titel/Folge wählen. |
-| Umlaute kaputt in der Konsole | Wird automatisch auf UTF-8 gesetzt; bei alten Windows-Konsolen hilft `chcp 65001`. |
-| Wiedergabe startet nicht in WSL | Kein GUI-Backend – `--debug` nutzen oder WSLg (Windows 11). |
-
-Mehr Details zu Fehlern liefert das `--debug`-Flag (zeigt dann auch vollständige
-Tracebacks statt einer freundlichen deutschen Meldung).
+Language tokens: `ger-dub` (German dub), `ger-sub` (German subtitles),
+`eng-sub` (English subtitles).
 
 ---
 
-## Hinweise für Entwickler
+## Troubleshooting
 
-- aniworld.to ändert Markup und Hoster regelmäßig. Extraktoren werden gegen die
-  **Live**-Seite verifiziert; neue Beispiele bei Bedarf in `tests/fixtures/`
-  ablegen und Parser anpassen.
-- Architektur: `search.py` → `series.py`/`episode.py` → `resolve.py` →
-  `extractors/<hoster>.py` → `player.py`. Alle deutschen Texte liegen in
-  `i18n.py`.
+| Symptom | Cause / fix |
+|---------|-------------|
+| `mpv wurde nicht gefunden` | Install mpv (see [step 1](#1--install-mpv)) or use `--player <path>`. |
+| Cloudflare / anti-bot message | The site is blocking bots. An **external** [`flaresolverr`](https://github.com/FlareSolverr/FlareSolverr) service can help (not bundled). |
+| `Kein Hoster lieferte einen abspielbaren Stream` | Hosters temporarily unavailable; retry later or pick another title/episode. |
+| Garbled umlauts in the console | UTF-8 is forced automatically; on old Windows consoles `chcp 65001` helps. |
+| Playback won't start in WSL | No GUI backend – use `--debug`, or WSLg (Windows 11). |
+
+The `--debug` flag also shows full tracebacks instead of a friendly German
+message, which helps when reporting issues.
 
 ---
 
-## Rechtliches
+## For developers
 
-Lizenz: **GNU GPL v3.0 oder später** – siehe [LICENSE](LICENSE).
+- aniworld.to changes its markup and hosters regularly. Extractors are verified
+  against the **live** site; when needed, save fresh samples into
+  `tests/fixtures/` and adjust the parsers.
+- Architecture: `search.py` → `series.py`/`episode.py` → `resolve.py` →
+  `extractors/<hoster>.py` → `player.py`. All German strings live in `i18n.py`.
+
+---
+
+## Legal
+
+License: **GNU GPL v3.0 or later** – see [LICENSE](LICENSE).
 Copyright © 2026 dxmoc.
 
-Dies ist ein reines **Client-Werkzeug** für den Zugriff und hostet selbst keine
-Inhalte. Für eine rechtmäßige Nutzung ist allein der Nutzer verantwortlich.
+This is a pure **client-side access tool**; it hosts no content itself. The user
+is solely responsible for lawful use.
