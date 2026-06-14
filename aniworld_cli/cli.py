@@ -69,7 +69,13 @@ def run(args: argparse.Namespace) -> int:
         print(i18n.t("aborted"))
         return 0
 
+    return resolve_and_play(episode, args)
+
+
+def resolve_and_play(episode, args: argparse.Namespace) -> int:
+    """Load hosters, resolve a stream by priority, then debug-print or play."""
     from . import episode as episode_mod
+    from . import resolve as resolve_mod
 
     print(i18n.t("loading_hosters"))
     hosters = episode_mod.list_hosters(episode)
@@ -77,11 +83,17 @@ def run(args: argparse.Namespace) -> int:
         print(i18n.t("no_hosters"))
         return 0
 
-    # M3: show the raw hoster list with languages. Extraction lands in M4–M5.
-    print(episode.label)
-    for h in hosters:
-        print(f"  - {h.name} [{h.lang}] {h.redirect_url}")
-    return 0
+    stream, _hoster = resolve_mod.resolve_stream(hosters, report=print)
+    if stream is None:
+        print(i18n.t("all_hosters_failed"))
+        return 1
+
+    if args.debug:
+        print(i18n.t("debug_stream_url", stream.url))
+        print(i18n.t("debug_headers", stream.headers))
+        return 0
+
+    return play_stream(stream, args.player)
 
 
 def _season_label(season: int) -> str:
