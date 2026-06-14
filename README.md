@@ -28,7 +28,10 @@
 
 - 🔍 Suche über die AJAX-Schnittstelle von aniworld.to
 - 📺 Auswahl von **Serie → Staffel (inkl. Filme) → Folge** per Pfeiltasten
-- 🌐 Sprachpriorität **German Dub → German Sub → Eng Sub** (konfigurierbar)
+- 🌐 **Sprachauswahl pro Folge**: bietet eine Folge mehrere Sprachen an
+  (z. B. German Dub / German Sub / Eng Sub), erscheint ein Menü; die Wahl wird
+  für die nächsten Folgen gemerkt. Mit `--lang` oder `--no-menu` greift
+  stattdessen automatisch die Prioritätsreihenfolge.
 - 🔁 Hoster-Fallback nach Priorität – verifizierte Extraktoren: **VOE**,
   **Doodstream**, **Vidmoly** (Filemoon „best effort")
 - ⏭️ „Nächste Folge / Andere Folge / Beenden"-Schleife nach der Wiedergabe

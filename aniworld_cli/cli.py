@@ -168,13 +168,45 @@ def run(args: argparse.Namespace) -> int:
     return _playback_loop(series, nav, args)
 
 
+def _lang_label(token: str) -> str:
+    """Human German label for a language token, falling back to the raw token."""
+    label = i18n.t(f"lang_{token}")
+    return token if label == f"lang_{token}" else label
+
+
+def _choose_language(hosters, args: argparse.Namespace, remembered: str | None) -> str | None:
+    """Decide the language for this episode.
+
+    Returns a concrete language token, or ``None`` to mean "use priority
+    automatically". The menu is only shown interactively when more than one
+    language is available; ``--lang`` and ``--no-menu`` skip it. A previously
+    chosen language is reused as long as it is still on offer.
+    """
+    from . import resolve as resolve_mod
+
+    if args.no_menu or args.lang:
+        return None
+    langs = resolve_mod.available_languages(hosters)
+    if not langs:
+        return None
+    if remembered and remembered in langs:
+        return remembered
+    if len(langs) == 1:
+        return langs[0]
+    return _select(  # type: ignore[return-value]
+        i18n.t("choose_language"),
+        [questionary.Choice(_lang_label(lang), value=lang) for lang in langs],
+    )
+
+
 def _playback_loop(series: Series, nav: Nav, args: argparse.Namespace) -> int:
     """Play the current episode, then offer next/other/quit until the user exits."""
     season, episodes, index = nav
+    preferred_lang: str | None = None
     while True:
         episode = episodes[index]
         print(i18n.t("now_playing", episode.label))
-        rc = resolve_and_play(episode, args)
+        rc, preferred_lang = resolve_and_play(episode, args, preferred_lang)
 
         # Non-interactive modes play exactly one episode.
         if args.debug or args.no_menu:
@@ -197,8 +229,14 @@ def _playback_loop(series: Series, nav: Nav, args: argparse.Namespace) -> int:
             season, episodes, index = new_nav
 
 
-def resolve_and_play(episode: Episode, args: argparse.Namespace) -> int:
-    """Load hosters, resolve a stream by priority, then debug-print or play."""
+def resolve_and_play(
+    episode: Episode, args: argparse.Namespace, preferred_lang: str | None = None
+) -> tuple[int, str | None]:
+    """Load hosters, let the user pick a language, resolve and play/debug-print.
+
+    Returns ``(exit_code, chosen_language)``; the chosen language is carried back
+    so the playback loop can reuse it for the next episode.
+    """
     from . import episode as episode_mod
     from . import resolve as resolve_mod
 
@@ -206,19 +244,23 @@ def resolve_and_play(episode: Episode, args: argparse.Namespace) -> int:
     hosters = episode_mod.list_hosters(episode)
     if not hosters:
         print(i18n.t("no_hosters"))
-        return 1
+        return 1, preferred_lang
 
-    stream, _hoster = resolve_mod.resolve_stream(hosters, report=print)
+    language = _choose_language(hosters, args, preferred_lang)
+    # Remember a concrete pick; keep the old one when resolution is automatic.
+    next_lang = language or preferred_lang
+
+    stream, _hoster = resolve_mod.resolve_stream(hosters, language=language, report=print)
     if stream is None:
         print(i18n.t("all_hosters_failed"))
-        return 1
+        return 1, next_lang
 
     if args.debug:
         print(i18n.t("debug_stream_url", stream.url))
         print(i18n.t("debug_headers", stream.headers))
-        return 0
+        return 0, next_lang
 
-    return play_stream(stream, args.player)
+    return play_stream(stream, args.player), next_lang
 
 
 def post_playback_menu() -> str | None:

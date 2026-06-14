@@ -24,6 +24,11 @@ STRINGS: dict[str, str] = {
     "season_label": "Staffel {}",
     "movies_label": "Filme",
     "no_episodes": "Keine Folgen gefunden.",
+    # Language selection
+    "choose_language": "Sprache / Untertitel wählen:",
+    "lang_ger-dub": "Deutsch (Dub)",
+    "lang_ger-sub": "Deutsch mit Untertitel (Ger-Sub)",
+    "lang_eng-sub": "Original mit englischem Untertitel (Eng-Sub)",
     # Hoster / extraction
     "loading_hosters": "Lade Hoster …",
     "no_hosters": "Keine passenden Hoster gefunden.",
