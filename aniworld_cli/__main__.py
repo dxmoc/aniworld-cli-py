@@ -63,7 +63,10 @@ def main(argv: list[str] | None = None) -> int:
     _apply_env_overrides(args)
 
     # Import after env overrides so config picks them up.
+    import requests
+
     from . import cli
+    from .http import CloudflareChallenge
 
     try:
         return cli.run(args)
@@ -71,6 +74,14 @@ def main(argv: list[str] | None = None) -> int:
         print()
         print(i18n.t("goodbye"))
         return 130
+    except CloudflareChallenge:
+        print(i18n.t("cloudflare_block"))
+        return 1
+    except requests.RequestException:
+        if args.debug:
+            raise
+        print(i18n.t("network_error"))
+        return 1
     except Exception:  # noqa: BLE001 - never show a raw traceback to the user
         if args.debug:
             raise

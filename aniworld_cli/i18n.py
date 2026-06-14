@@ -42,6 +42,13 @@ STRINGS: dict[str, str] = {
     "next_episode": "Nächste Folge",
     "other_episode": "Andere Folge",
     "quit": "Beenden",
+    "no_next_episode": "Keine weitere Folge in dieser Staffel.",
+    "now_playing": "Spiele: {}",
+    # Argument handling
+    "episode_arg_invalid": "Ungültiges Format für --episode: „{}“. Erwartet: Staffel-Folge, z. B. 1-3 (oder 0-1 für Filme).",
+    "episode_not_found": "Folge {} nicht gefunden.",
+    "season_not_found": "Staffel {} nicht gefunden.",
+    "no_query": "Kein Suchbegriff angegeben.",
     # Network / anti-bot
     "network_error": "Netzwerkfehler. Ist die Seite erreichbar?",
     "cloudflare_block": (
