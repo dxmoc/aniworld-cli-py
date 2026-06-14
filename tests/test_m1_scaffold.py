@@ -40,7 +40,7 @@ def test_registry_covers_priority_hosters():
     }
 
 
-def test_player_command_folds_headers():
+def test_player_command_separates_user_agent():
     stream = Stream(
         url="https://cdn.example/video.m3u8",
         headers={"Referer": "https://voe.sx/", "User-Agent": "UA"},
@@ -48,9 +48,12 @@ def test_player_command_folds_headers():
     cmd = player.build_command("mpv", stream)
     assert cmd[0] == "mpv"
     assert cmd[-1] == stream.url
+    # User-Agent goes to its dedicated flag (avoids duplicate-header 400s)...
+    assert "--user-agent=UA" in cmd
+    # ...and must NOT be folded into --http-header-fields.
     hdr = next(a for a in cmd if a.startswith("--http-header-fields="))
     assert "Referer: https://voe.sx/" in hdr
-    assert "User-Agent: UA" in hdr
+    assert "User-Agent" not in hdr
 
 
 def test_player_command_no_headers():

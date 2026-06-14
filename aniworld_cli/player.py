@@ -36,10 +36,23 @@ def install_hint() -> str:
 
 
 def build_command(mpv_path: str, stream: Stream) -> list[str]:
-    """Build the mpv argv, folding required headers into one flag."""
+    """Build the mpv argv from the resolved stream and its required headers.
+
+    User-Agent is passed via mpv's dedicated ``--user-agent`` flag rather than
+    folded into ``--http-header-fields``: ffmpeg always emits a User-Agent of its
+    own, so adding a second one through the header-fields list produces a
+    duplicate header that some CDNs reject with HTTP 400. Remaining headers
+    (e.g. Referer) go into ``--http-header-fields``.
+    """
     cmd = [mpv_path]
-    if stream.headers:
-        fields = ",".join(f"{k}: {v}" for k, v in stream.headers.items())
+    headers = dict(stream.headers)
+    user_agent = next(
+        (headers.pop(k) for k in list(headers) if k.lower() == "user-agent"), None
+    )
+    if user_agent:
+        cmd.append(f"--user-agent={user_agent}")
+    if headers:
+        fields = ",".join(f"{k}: {v}" for k, v in headers.items())
         cmd.append(f"--http-header-fields={fields}")
     cmd.append(stream.url)
     return cmd
