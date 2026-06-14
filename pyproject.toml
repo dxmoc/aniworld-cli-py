@@ -8,6 +8,13 @@ version = "0.1.0"
 description = "Pure-Python streaming-only CLI for aniworld.to (mpv via subprocess)"
 readme = "README.md"
 requires-python = ">=3.9"
+license = "GPL-3.0-or-later"
+authors = [{ name = "dxmoc" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+]
 dependencies = [
     "requests>=2.31",
     "beautifulsoup4>=4.12",
