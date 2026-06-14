@@ -64,10 +64,56 @@ def run(args: argparse.Namespace) -> int:
         print(i18n.t("aborted"))
         return 0
 
-    # Season/episode/hoster/extract loop lands in M3–M6.
-    print(series.url)
-    print(i18n.t("no_episodes"))
+    episode = choose_episode(series)
+    if episode is None:
+        print(i18n.t("aborted"))
+        return 0
+
+    from . import episode as episode_mod
+
+    print(i18n.t("loading_hosters"))
+    hosters = episode_mod.list_hosters(episode)
+    if not hosters:
+        print(i18n.t("no_hosters"))
+        return 0
+
+    # M3: show the raw hoster list with languages. Extraction lands in M4–M5.
+    print(episode.label)
+    for h in hosters:
+        print(f"  - {h.name} [{h.lang}] {h.redirect_url}")
     return 0
+
+
+def _season_label(season: int) -> str:
+    return i18n.t("movies_label") if season == 0 else i18n.t("season_label", season)
+
+
+def choose_episode(series):
+    """Interactive season -> episode selection. Returns an Episode or None."""
+    from . import series as series_mod
+
+    print(i18n.t("loading_series"))
+    seasons = series_mod.list_seasons(series)
+    if not seasons:
+        print(i18n.t("no_episodes"))
+        return None
+
+    season = _select(
+        i18n.t("choose_season"),
+        [questionary.Choice(_season_label(s), value=s) for s in seasons],
+    )
+    if season is None:
+        return None
+
+    episodes = series_mod.list_episodes(series, season)
+    if not episodes:
+        print(i18n.t("no_episodes"))
+        return None
+
+    return _select(
+        i18n.t("choose_episode"),
+        [questionary.Choice(e.label, value=e) for e in episodes],
+    )
 
 
 def post_playback_menu() -> str | None:
