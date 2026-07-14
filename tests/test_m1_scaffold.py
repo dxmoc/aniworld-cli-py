@@ -17,8 +17,8 @@ def test_i18n_lookup_and_format():
 def test_config_overrides(monkeypatch):
     monkeypatch.setenv("ANIWORLD_LANG", "eng-sub, ger-dub")
     assert config.language_priority() == ["eng-sub", "ger-dub"]
-    monkeypatch.setenv("ANIWORLD_HOSTER", "VOE,Vidoza")
-    assert config.hoster_priority() == ["VOE", "Vidoza"]
+    monkeypatch.setenv("ANIWORLD_HOSTER", "VOE,Vidmoly")
+    assert config.hoster_priority() == ["VOE", "Vidmoly"]
 
 
 def test_default_priorities():
@@ -29,15 +29,7 @@ def test_default_priorities():
 def test_registry_covers_priority_hosters():
     for name in config.DEFAULT_HOSTER_PRIORITY:
         assert dispatch(name) is not None, name
-    assert set(REGISTRY) == {
-        "voe",
-        "filemoon",
-        "vidoza",
-        "speedfiles",
-        "doodstream",
-        "vidmoly",
-        "streamtape",
-    }
+    assert set(REGISTRY) == {"voe", "vidmoly"}
 
 
 def test_player_command_separates_user_agent():

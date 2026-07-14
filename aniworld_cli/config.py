@@ -48,15 +48,12 @@ def language_priority() -> list[str]:
 
 
 # Hoster priority. Matched case-insensitively against the names shown on the
-# episode page. Try in order, fall through on failure.
+# episode page. Try in order, fall through on failure. Only hosters with a
+# working extractor are listed (see aniworld_cli/extractors and the README's
+# hoster status).
 DEFAULT_HOSTER_PRIORITY = [
     "VOE",
-    "Filemoon",
-    "Vidoza",
-    "SpeedFiles",
-    "Doodstream",
     "Vidmoly",
-    "Streamtape",
 ]
 
 

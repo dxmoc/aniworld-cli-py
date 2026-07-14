@@ -15,19 +15,17 @@ from typing import Callable, Optional
 import requests
 
 from ..models import Stream
-from . import doodstream, filemoon, speedfiles, streamtape, vidmoly, vidoza, voe
+from . import vidmoly, voe
 
 ExtractFn = Callable[[str, requests.Session], Optional[Stream]]
 
 # Keys are matched case-insensitively against hoster names from the episode page.
+# Only hosters that actually resolve on the live site are registered; others
+# (Doodstream, Filemoon, Vidoza, SpeedFiles, Streamtape) were dropped after they
+# either added anti-bot gates or stopped being offered — see the README.
 REGISTRY: dict[str, ExtractFn] = {
     "voe": voe.extract,
-    "filemoon": filemoon.extract,
-    "vidoza": vidoza.extract,
-    "speedfiles": speedfiles.extract,
-    "doodstream": doodstream.extract,
     "vidmoly": vidmoly.extract,
-    "streamtape": streamtape.extract,
 }
 
 

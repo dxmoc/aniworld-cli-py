@@ -247,18 +247,20 @@ message, which helps when reporting issues.
 aniworld.to changes hosters and their embed markup regularly, so extractor
 health drifts over time. Last checked **2026-07-14**:
 
-| Hoster      | Status                                                            |
-|-------------|-------------------------------------------------------------------|
-| VOE         | ✅ working                                                         |
-| Vidmoly     | ✅ working                                                         |
-| Doodstream  | ⚠️ extractor stale – the embed page dropped the `pass_md5` call    |
-| Filemoon    | ⚠️ best-effort, currently not resolving                           |
-| Vidoza      | ➖ no longer offered by the site                                   |
-| SpeedFiles  | ➖ no longer offered by the site                                   |
-| Streamtape  | ➖ no longer offered by the site                                   |
+| Hoster      | Status                                                                |
+|-------------|-----------------------------------------------------------------------|
+| VOE         | ✅ working                                                             |
+| Vidmoly     | ✅ working                                                             |
+| Doodstream  | ❌ removed – embed now behind a Cloudflare Turnstile CAPTCHA           |
+| Filemoon    | ❌ removed – no longer resolving without a headless browser           |
+| Vidoza      | ❌ removed – no longer offered by the site                            |
+| SpeedFiles  | ❌ removed – no longer offered by the site                            |
+| Streamtape  | ❌ removed – no longer offered by the site                            |
 
-Failing or missing hosters are harmless: an extractor that cannot resolve returns
-`None`, and resolution falls through to the next hoster by priority.
+Only **VOE** and **Vidmoly** ship with a working extractor; in a live survey they
+cover every episode tried, so the removed hosters cost no real coverage. Adding
+one back is a matter of dropping a new module into `aniworld_cli/extractors/` and
+registering it — see the extractor contract in that package's `__init__.py`.
 
 ## For developers
 
