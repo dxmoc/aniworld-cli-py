@@ -39,6 +39,12 @@
 - Hoster fallback by priority – currently verified working: **VOE** and
   **Vidmoly** (see [hoster status](#hoster-status) for the rest)
 - "Next episode / Other episode / Quit" loop after playback
+- **Resume**: your last-watched episode per series is remembered, and picking
+  that series again offers "continue where you left off"
+- **Watchlist** (`--watchlist` / `-w`): jump straight into a previously watched
+  series without searching
+- **Binge mode** (`--auto`): auto-advance to the next episode until the season ends
+- mpv shows the episode name (`Series – S03E12`) instead of the raw CDN URL
 - `--debug` resolves the final stream URL without launching mpv
 
 ---
@@ -192,11 +198,18 @@ python -m aniworld_cli "naruto" --no-menu --episode 1-1
 # Prefer English subtitles:
 python -m aniworld_cli "one piece" --lang eng-sub
 
+# Binge a whole season – auto-advance until it ends:
+python -m aniworld_cli "naruto" --auto
+
+# Continue a previously watched series without searching:
+python -m aniworld_cli --watchlist
+
 # Custom mpv path (if not on PATH):
 python -m aniworld_cli "naruto" --player "C:\Program Files\MPV Player\mpv.exe"
 ```
 
-After playback you get a **Next episode / Other episode / Quit** menu.
+After playback you get a **Next episode / Other episode / Quit** menu. Your last
+episode per series is remembered, so picking it again offers to **resume**.
 
 ---
 
@@ -209,18 +222,21 @@ After playback you get a **Next episode / Other episode / Quit** menu.
 | `--hoster`        | Hoster priority, comma-separated                                 |
 | `--episode S-E`   | Pick a season-episode directly, e.g. `1-3` (or `0-1` for movies) |
 | `--no-menu`       | Use arguments only, no interactive menus                         |
+| `--auto`          | Binge mode: auto-advance to the next episode until the season ends |
+| `--watchlist`, `-w` | Pick from previously watched series instead of searching       |
 | `--player <path>` | Path to mpv (otherwise taken from `PATH`)                        |
 | `--debug`         | Print stream URL + headers, do not launch mpv                    |
 | `--version`       | Show the version                                                 |
 
 The same settings via environment variables:
 
-| Variable            | Effect                                  |
-|---------------------|-----------------------------------------|
-| `ANIWORLD_LANG`     | Language priority (like `--lang`)       |
-| `ANIWORLD_HOSTER`   | Hoster priority (like `--hoster`)       |
-| `ANIWORLD_BASE_URL` | Override the base URL                   |
-| `ANIWORLD_UA`       | Custom User-Agent                       |
+| Variable            | Effect                                          |
+|---------------------|-------------------------------------------------|
+| `ANIWORLD_LANG`     | Language priority (like `--lang`)               |
+| `ANIWORLD_HOSTER`   | Hoster priority (like `--hoster`)               |
+| `ANIWORLD_BASE_URL` | Override the base URL                           |
+| `ANIWORLD_UA`       | Custom User-Agent                               |
+| `ANIWORLD_STATE_DIR`| Where resume/watchlist state is stored (default: OS config dir) |
 
 Language tokens: `ger-dub` (German dub), `ger-sub` (German subtitles),
 `eng-sub` (English subtitles).
