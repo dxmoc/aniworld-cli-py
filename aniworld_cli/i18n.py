@@ -27,7 +27,7 @@ STRINGS: dict[str, str] = {
     # Language selection
     "choose_language": "Sprache / Untertitel wählen:",
     "lang_ger-dub": "Deutsch (Dub)",
-    "lang_ger-sub": "Deutsch mit Untertitel (Ger-Sub)",
+    "lang_ger-sub": "Original mit deutschem Untertitel (Ger-Sub)",
     "lang_eng-sub": "Original mit englischem Untertitel (Eng-Sub)",
     # Hoster / extraction
     "loading_hosters": "Lade Hoster …",
