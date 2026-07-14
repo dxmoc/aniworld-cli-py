@@ -5,7 +5,7 @@
 > Playback runs exclusively through **mpv**. No downloads.
 
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-green)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Platforms](https://img.shields.io/badge/os-Linux%20%7C%20Windows%20%7C%20WSL-lightgrey)]()
 
 > **Note:** The on-screen text of the app is **German** (it targets aniworld.to,
@@ -253,7 +253,7 @@ message, which helps when reporting issues.
 
 ## Legal
 
-License: **GNU GPL v3.0 or later** – see [LICENSE](LICENSE).
+License: **MIT** – see [LICENSE](LICENSE).
 Copyright © 2026 dxmoc.
 
 This is a pure **client-side access tool**; it hosts no content itself. The user
