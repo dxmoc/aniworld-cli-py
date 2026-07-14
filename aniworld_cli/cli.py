@@ -133,7 +133,44 @@ def _initial_nav(series: Series, args: argparse.Namespace) -> Nav | None:
             return None
         return season, episodes, 0
 
+    # Interactive: offer to resume where this series was last left off.
+    from . import state
+
+    progress = state.get_progress(series.slug)
+    if progress:
+        choice = _select(
+            i18n.t("resume_prompt"),
+            [
+                questionary.Choice(
+                    i18n.t("resume_continue", progress.get("label", "?")), value="resume"
+                ),
+                questionary.Choice(i18n.t("resume_choose_other"), value="other"),
+            ],
+        )
+        if choice is None:
+            return None  # aborted (Ctrl-C / empty)
+        if choice == "resume":
+            resumed = _nav_from_progress(series, progress)
+            if resumed is not None:
+                return resumed
+            # Saved episode no longer exists -> fall back to manual selection.
+
     return choose_episode_nav(series)
+
+
+def _nav_from_progress(series: Series, progress: dict) -> Nav | None:
+    """Rebuild a Nav position from a stored resume entry, or None if it's gone."""
+    from . import series as series_mod
+
+    season = progress.get("season")
+    number = progress.get("number")
+    if season is None or number is None:
+        return None
+    episodes = series_mod.list_episodes(series, season)
+    for idx, ep in enumerate(episodes):
+        if ep.number == number:
+            return season, episodes, idx
+    return None
 
 
 def run(args: argparse.Namespace) -> int:
@@ -144,10 +181,22 @@ def run(args: argparse.Namespace) -> int:
     if not args.debug and not check_player(args.player):
         return 1
 
+    series = _pick_from_watchlist(args) if args.watchlist else _search_and_pick(args)
+    if series is None:
+        return 0
+
+    nav = _initial_nav(series, args)
+    if nav is None:
+        return 0
+    return _playback_loop(series, nav, args)
+
+
+def _search_and_pick(args: argparse.Namespace) -> Series | None:
+    """Resolve a query, search the site, and let the user pick a series."""
     query = _resolve_query(args)
     if not query:
         print(i18n.t("no_query") if args.no_menu else i18n.t("aborted"))
-        return 0
+        return None
 
     print(i18n.t("searching"))
     from . import search as search_mod
@@ -155,17 +204,36 @@ def run(args: argparse.Namespace) -> int:
     results = search_mod.search(query)
     if not results:
         print(i18n.t("no_results", query))
-        return 0
+        return None
 
     series = _pick_series(results, args)
     if series is None:
         print(i18n.t("aborted"))
-        return 0
+    return series
 
-    nav = _initial_nav(series, args)
-    if nav is None:
-        return 0
-    return _playback_loop(series, nav, args)
+
+def _pick_from_watchlist(args: argparse.Namespace) -> Series | None:
+    """Pick a series from the watched-history store, skipping search entirely."""
+    from . import state
+
+    entries = state.list_entries()
+    if not entries:
+        print(i18n.t("watchlist_empty"))
+        return None
+
+    series_list = [
+        Series(title=e.get("title", e["slug"]), slug=e["slug"], url=e.get("url", ""))
+        for e in entries
+    ]
+    if args.no_menu:
+        return series_list[0]
+    choices = [
+        questionary.Choice(
+            i18n.t("watchlist_entry", s.title, e.get("label", "?")), value=s
+        )
+        for e, s in zip(entries, series_list)
+    ]
+    return _select(i18n.t("choose_from_watchlist"), choices)  # type: ignore[return-value]
 
 
 def _lang_label(token: str) -> str:
@@ -206,10 +274,29 @@ def _playback_loop(series: Series, nav: Nav, args: argparse.Namespace) -> int:
     while True:
         episode = episodes[index]
         print(i18n.t("now_playing", episode.label))
-        rc, preferred_lang = resolve_and_play(episode, args, preferred_lang)
+        rc, preferred_lang = resolve_and_play(episode, args, preferred_lang, series)
 
-        # Non-interactive modes play exactly one episode.
-        if args.debug or args.no_menu:
+        # Remember this as the resume point (not in --debug: nothing was played).
+        if not args.debug:
+            from . import state
+
+            state.record(series, episode)
+
+        # --debug resolves one episode and stops.
+        if args.debug:
+            return rc
+
+        # Auto/binge mode: advance without prompting until the season ends.
+        if args.auto:
+            if index + 1 < len(episodes):
+                index += 1
+                print(i18n.t("auto_next"))
+                continue
+            print(i18n.t("auto_season_end"))
+            return rc
+
+        # --no-menu plays exactly one episode.
+        if args.no_menu:
             return rc
 
         action = post_playback_menu()
@@ -230,12 +317,16 @@ def _playback_loop(series: Series, nav: Nav, args: argparse.Namespace) -> int:
 
 
 def resolve_and_play(
-    episode: Episode, args: argparse.Namespace, preferred_lang: str | None = None
+    episode: Episode,
+    args: argparse.Namespace,
+    preferred_lang: str | None = None,
+    series: Series | None = None,
 ) -> tuple[int, str | None]:
     """Load hosters, let the user pick a language, resolve and play/debug-print.
 
     Returns ``(exit_code, chosen_language)``; the chosen language is carried back
-    so the playback loop can reuse it for the next episode.
+    so the playback loop can reuse it for the next episode. ``series`` is used
+    only to build a friendly mpv window title.
     """
     from . import episode as episode_mod
     from . import resolve as resolve_mod
@@ -260,7 +351,8 @@ def resolve_and_play(
         print(i18n.t("debug_headers", stream.headers))
         return 0, next_lang
 
-    return play_stream(stream, args.player), next_lang
+    title = f"{series.title} – {episode.label}" if series else episode.label
+    return play_stream(stream, args.player, title), next_lang
 
 
 def post_playback_menu() -> str | None:
@@ -275,11 +367,11 @@ def post_playback_menu() -> str | None:
     )
 
 
-def play_stream(stream: Stream, player_path: str | None) -> int:
+def play_stream(stream: Stream, player_path: str | None, title: str | None = None) -> int:
     """Launch mpv, surfacing a German error if it cannot start."""
     print(i18n.t("starting_player"))
     try:
-        return player.play(stream, player_path)
+        return player.play(stream, player_path, title)
     except player.PlayerNotFound as exc:
         print(i18n.t("mpv_missing"))
         print(str(exc))

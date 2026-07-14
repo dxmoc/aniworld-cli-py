@@ -26,6 +26,17 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Nur Argumente verwenden, keine interaktiven Menüs",
     )
+    p.add_argument(
+        "--auto",
+        action="store_true",
+        help="Auto-Modus: nach jeder Folge automatisch die nächste starten",
+    )
+    p.add_argument(
+        "--watchlist",
+        "-w",
+        action="store_true",
+        help="Aus zuletzt gesehenen Serien wählen, ohne zu suchen",
+    )
     p.add_argument("--player", help="Pfad zu mpv (sonst aus PATH)")
     p.add_argument(
         "--debug",

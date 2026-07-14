@@ -49,6 +49,15 @@ STRINGS: dict[str, str] = {
     "quit": "Beenden",
     "no_next_episode": "Keine weitere Folge in dieser Staffel.",
     "now_playing": "Spiele: {}",
+    # Resume / watchlist / auto mode
+    "resume_prompt": "Fortsetzen?",
+    "resume_continue": "Weiter bei {}",
+    "resume_choose_other": "Andere Folge wählen",
+    "choose_from_watchlist": "Aus deiner Watchlist wählen:",
+    "watchlist_entry": "{} – zuletzt {}",
+    "watchlist_empty": "Deine Watchlist ist leer – schau erst etwas an, dann merke ich es mir.",
+    "auto_next": "Auto-Modus: nächste Folge …",
+    "auto_season_end": "Staffelende erreicht – Auto-Modus beendet.",
     # Argument handling
     "episode_arg_invalid": "Ungültiges Format für --episode: „{}“. Erwartet: Staffel-Folge, z. B. 1-3 (oder 0-1 für Filme).",
     "episode_not_found": "Folge {} nicht gefunden.",

@@ -35,7 +35,7 @@ def install_hint() -> str:
     return i18n.t("mpv_hint_linux")
 
 
-def build_command(mpv_path: str, stream: Stream) -> list[str]:
+def build_command(mpv_path: str, stream: Stream, title: str | None = None) -> list[str]:
     """Build the mpv argv from the resolved stream and its required headers.
 
     User-Agent is passed via mpv's dedicated ``--user-agent`` flag rather than
@@ -43,6 +43,9 @@ def build_command(mpv_path: str, stream: Stream) -> list[str]:
     own, so adding a second one through the header-fields list produces a
     duplicate header that some CDNs reject with HTTP 400. Remaining headers
     (e.g. Referer) go into ``--http-header-fields``.
+
+    ``title`` (e.g. "Naruto – S03E12") is passed via ``--force-media-title`` so
+    mpv shows the episode name instead of the opaque, tokenised CDN URL.
     """
     cmd = [mpv_path]
     headers = dict(stream.headers)
@@ -54,11 +57,13 @@ def build_command(mpv_path: str, stream: Stream) -> list[str]:
     if headers:
         fields = ",".join(f"{k}: {v}" for k, v in headers.items())
         cmd.append(f"--http-header-fields={fields}")
+    if title:
+        cmd.append(f"--force-media-title={title}")
     cmd.append(stream.url)
     return cmd
 
 
-def play(stream: Stream, mpv_path: str | None = None) -> int:
+def play(stream: Stream, mpv_path: str | None = None, title: str | None = None) -> int:
     """Launch mpv for ``stream``. Returns mpv's exit code.
 
     Raises PlayerNotFound if mpv is unavailable.
@@ -66,6 +71,6 @@ def play(stream: Stream, mpv_path: str | None = None) -> int:
     resolved = find_mpv(mpv_path)
     if not resolved:
         raise PlayerNotFound(install_hint())
-    cmd = build_command(resolved, stream)
+    cmd = build_command(resolved, stream, title)
     proc = subprocess.run(cmd)  # noqa: S603 - argv list, no shell
     return proc.returncode
