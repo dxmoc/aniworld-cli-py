@@ -29,16 +29,16 @@
 
 ## Features
 
-- 🔍 Search via aniworld.to's AJAX endpoint
-- 📺 Pick **series → season (incl. movies) → episode** with arrow keys
-- 🌐 **Per-episode language/subtitle selection**: when an episode offers more
+- Search via aniworld.to's AJAX endpoint
+- Pick **series → season (incl. movies) → episode** with arrow keys
+- **Per-episode language/subtitle selection**: when an episode offers more
   than one language (e.g. German Dub / German Sub / Eng Sub) a menu appears, and
   your choice is remembered for the next episodes. With `--lang` or `--no-menu`
   the configured priority order is used automatically instead.
-- 🔁 Hoster fallback by priority – verified extractors: **VOE**, **Doodstream**,
+- Hoster fallback by priority – verified extractors: **VOE**, **Doodstream**,
   **Vidmoly** (Filemoon is best-effort)
-- ⏭️ "Next episode / Other episode / Quit" loop after playback
-- 🐞 `--debug` resolves the final stream URL without launching mpv
+- "Next episode / Other episode / Quit" loop after playback
+- `--debug` resolves the final stream URL without launching mpv
 
 ---
 
@@ -69,7 +69,7 @@ python -m aniworld_cli "naruto"
 aniworld-cli plays exclusively through **[mpv](https://mpv.io/)**. mpv must be on
 your `PATH` (or passed via `--player <path>`).
 
-### 🐧 Linux
+### Linux
 
 | Distribution      | Command                          |
 |-------------------|----------------------------------|
@@ -77,7 +77,7 @@ your `PATH` (or passed via `--player <path>`).
 | Debian / Ubuntu   | `sudo apt install mpv`          |
 | Fedora            | `sudo dnf install mpv`          |
 
-### 🪟 Windows (PowerShell)
+### Windows (PowerShell)
 
 ```powershell
 winget install --id shinchiro.mpv
@@ -90,7 +90,7 @@ scoop install mpv
 > open a **new** terminal, or pass `--player "C:\Program Files\MPV Player\mpv.exe"`.
 > Verify with `mpv --version`.
 
-### 🐧🪟 WSL (Ubuntu on Windows)
+### WSL (Ubuntu on Windows)
 
 ```bash
 sudo apt update && sudo apt install mpv
@@ -112,7 +112,7 @@ mpv --version
 Requires **Python 3.9+** and **git**.
 
 <details>
-<summary>🐧 <b>Linux / macOS / WSL</b></summary>
+<summary><b>Linux / macOS / WSL</b></summary>
 
 ```bash
 git clone https://github.com/dxmoc/aniworld-cli-py.git
@@ -126,7 +126,7 @@ pip install -r requirements.txt
 </details>
 
 <details open>
-<summary>🪟 <b>Windows PowerShell</b></summary>
+<summary><b>Windows PowerShell</b></summary>
 
 ```powershell
 git clone https://github.com/dxmoc/aniworld-cli-py.git
