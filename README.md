@@ -297,3 +297,22 @@ Copyright © 2026 dxmoc.
 
 This is a pure **client-side access tool**; it hosts no content itself. The user
 is solely responsible for lawful use.
+
+## License & Attribution
+
+This project is a derivative work of [ani-cli](https://github.com/pystardust/ani-cli)
+by pystardust and contributors, originally written in shell.
+
+ani-cli is licensed under the GNU General Public License v3.0.
+In accordance with GPL v3, this project is also distributed under the
+GNU General Public License v3.0.
+
+A copy of the license is included in this repository: [LICENSE](./LICENSE)
+
+Changes made to the original work:
+- Rewritten in Python
+- Ported from generic anime-streaming sites to aniworld.to specifically
+- Added a German-language interactive CLI (search, series/season/episode menus)
+- Added resume state and a watchlist
+- Added binge/auto-advance mode
+- Added liveness-checked hoster fallback (VOE, Vidmoly)
