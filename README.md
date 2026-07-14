@@ -6,7 +6,7 @@
 
 [![tests](https://github.com/dxmoc/aniworld-cli-py/actions/workflows/tests.yml/badge.svg)](https://github.com/dxmoc/aniworld-cli-py/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-green)](LICENSE)
 [![Platforms](https://img.shields.io/badge/os-Linux%20%7C%20Windows%20%7C%20WSL-lightgrey)]()
 
 > **Note:** The on-screen text of the app is **German** (it targets aniworld.to,
@@ -292,7 +292,7 @@ registering it — see the extractor contract in that package's `__init__.py`.
 
 ## Legal
 
-License: **MIT** – see [LICENSE](LICENSE).
+License: **GNU GPL v3.0 or later** – see [LICENSE](LICENSE).
 Copyright © 2026 dxmoc.
 
 This is a pure **client-side access tool**; it hosts no content itself. The user
