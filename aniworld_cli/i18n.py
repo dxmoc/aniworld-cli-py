@@ -34,6 +34,7 @@ STRINGS: dict[str, str] = {
     "no_hosters": "Keine passenden Hoster gefunden.",
     "resolving_hoster": "Löse Hoster „{}“ auf …",
     "extract_failed": "Hoster „{}“ konnte nicht aufgelöst werden, versuche nächsten …",
+    "stream_dead": "Stream von „{}“ nicht abspielbar (z. B. 403), versuche nächsten …",
     "all_hosters_failed": "Kein Hoster lieferte einen abspielbaren Stream.",
     "resolved_stream": "Stream gefunden über „{}“.",
     # Player

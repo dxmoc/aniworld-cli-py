@@ -37,7 +37,9 @@
   your choice is remembered for the next episodes. With `--lang` or `--no-menu`
   the configured priority order is used automatically instead.
 - Hoster fallback by priority – currently verified working: **VOE** and
-  **Vidmoly** (see [hoster status](#hoster-status) for the rest)
+  **Vidmoly** (see [hoster status](#hoster-status) for the rest). Each resolved
+  stream is **liveness-checked**, so a hoster that hands out dead (403) segments
+  is skipped automatically instead of stalling the player.
 - "Next episode / Other episode / Quit" loop after playback
 - **Resume**: your last-watched episode per series is remembered, and picking
   that series again offers "continue where you left off"
