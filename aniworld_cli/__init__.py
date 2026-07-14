@@ -1,3 +1,8 @@
 """aniworld-cli: streaming-only CLI for aniworld.to."""
 
-__version__ = "0.1.0"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("aniworld-cli")
+except PackageNotFoundError:
+    __version__ = "0.0.0.dev0"
