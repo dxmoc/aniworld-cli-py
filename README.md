@@ -4,6 +4,7 @@
 > written from scratch in pure Python, with a German user interface.
 > Playback runs exclusively through **mpv**. No downloads.
 
+[![tests](https://github.com/dxmoc/aniworld-cli-py/actions/workflows/tests.yml/badge.svg)](https://github.com/dxmoc/aniworld-cli-py/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Platforms](https://img.shields.io/badge/os-Linux%20%7C%20Windows%20%7C%20WSL-lightgrey)]()
@@ -35,8 +36,8 @@
   than one language (e.g. German Dub / German Sub / Eng Sub) a menu appears, and
   your choice is remembered for the next episodes. With `--lang` or `--no-menu`
   the configured priority order is used automatically instead.
-- Hoster fallback by priority – verified extractors: **VOE**, **Doodstream**,
-  **Vidmoly** (Filemoon is best-effort)
+- Hoster fallback by priority – currently verified working: **VOE** and
+  **Vidmoly** (see [hoster status](#hoster-status) for the rest)
 - "Next episode / Other episode / Quit" loop after playback
 - `--debug` resolves the final stream URL without launching mpv
 
@@ -240,6 +241,24 @@ The `--debug` flag also shows full tracebacks instead of a friendly German
 message, which helps when reporting issues.
 
 ---
+
+## Hoster status
+
+aniworld.to changes hosters and their embed markup regularly, so extractor
+health drifts over time. Last checked **2026-07-14**:
+
+| Hoster      | Status                                                            |
+|-------------|-------------------------------------------------------------------|
+| VOE         | ✅ working                                                         |
+| Vidmoly     | ✅ working                                                         |
+| Doodstream  | ⚠️ extractor stale – the embed page dropped the `pass_md5` call    |
+| Filemoon    | ⚠️ best-effort, currently not resolving                           |
+| Vidoza      | ➖ no longer offered by the site                                   |
+| SpeedFiles  | ➖ no longer offered by the site                                   |
+| Streamtape  | ➖ no longer offered by the site                                   |
+
+Failing or missing hosters are harmless: an extractor that cannot resolve returns
+`None`, and resolution falls through to the next hoster by priority.
 
 ## For developers
 
