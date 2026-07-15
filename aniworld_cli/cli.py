@@ -10,6 +10,7 @@ without launching mpv.
 from __future__ import annotations
 
 import argparse
+from typing import cast
 
 import questionary
 
@@ -78,9 +79,12 @@ def choose_episode_nav(series: Series) -> Nav | None:
         print(i18n.t("no_episodes"))
         return None
 
-    season = _select(
-        i18n.t("choose_season"),
-        [questionary.Choice(_season_label(s), value=s) for s in seasons],
+    season = cast(
+        "int | None",
+        _select(
+            i18n.t("choose_season"),
+            [questionary.Choice(_season_label(s), value=s) for s in seasons],
+        ),
     )
     if season is None:
         return None
@@ -90,9 +94,12 @@ def choose_episode_nav(series: Series) -> Nav | None:
         print(i18n.t("no_episodes"))
         return None
 
-    chosen = _select(
-        i18n.t("choose_episode"),
-        [questionary.Choice(e.label, value=i) for i, e in enumerate(episodes)],
+    chosen = cast(
+        "int | None",
+        _select(
+            i18n.t("choose_episode"),
+            [questionary.Choice(e.label, value=i) for i, e in enumerate(episodes)],
+        ),
     )
     if chosen is None:
         return None
